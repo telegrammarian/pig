@@ -14,7 +14,7 @@ the game
 
 */
 
-let scores, roundScore, activePlayer, gamePlaying;
+let scores, roundScore, activePlayer, gamePlaying, lastDice;
 
 function init() {
     scores = [0, 0];
@@ -58,48 +58,70 @@ document.querySelector('.btn-roll').addEventListener(`click`,
     function(){
         if(gamePlaying) {
              //random number
-            const dice = Math.floor(Math.random() * 6) + 1;
-            // result
-            const diceDOM = document.querySelector('.dice')
-            diceDOM.style.display = `block`;
-            diceDOM.src = `dice-${dice}.png`;
+            const dice1 = Math.floor(Math.random() * 6) + 1;
+            const dice2 = Math.floor(Math.random() * 6) + 1;
+            //display result
+            document.getElementById('dice-1').style.display = `block`;
+            document.getElementById('dice-2').style.display = `block`;
+            document.getElementById('dice-1').src = `dice-${dice1}.png`;
+            document.getElementById('dice-2').src = `dice-${dice2}.png`;
             //update round score if num != 1
-        if (dice !== 1) {
+        if (dice1 !== 1 && dice2 !== 1) {
             //add score
-            `${roundScore += dice}`;
+            `${roundScore += dice1 + dice2}`;
             document.querySelector(`#current-${activePlayer}`).textContent = roundScore;
         } else {
             nextPlayer();
         }
+        if (dice1 === 6 || dice2 === 6 && lastDice === 6) {
+            //Player looses score
+            scores[activePlayer] = 0;
+            document.querySelector(`#score-${activePlayer}`).textContent = '0';
+            nextPlayer();
+        } else if (dice1 !== 1 || dice2 !== 1) {
+            //Add score
+            roundScore += dice1 + dice2;
+            document.querySelector(`#current-${activePlayer}`).textContent = roundScore;
+        } else {
+            //Next player
+            nextPlayer();
+        }
+        lastDice = dice1 + dice2;
     }
 });
        
 
 document.querySelector('.btn-hold').addEventListener(`click`, 
     function() {
-        if(gamePlaying) {
-            //add current score to global score
+        if (gamePlaying) {
+            // Add current score to global score
             scores[activePlayer] += roundScore;
-            //update the UI
+            // Update the UI
             document.querySelector(`#score-${activePlayer}`).textContent = scores[activePlayer];
-            //check if player won game
-            if (scores[activePlayer] >= 100) {
-                //player wins
-                document.querySelector(`#name-${activePlayer}`).textContent = 'Winner!'
-                document.querySelector('.dice').style.display = `none`;
-                document.querySelector(`.player-${activePlayer}-panel`).classList.add(`winner`)
-                document.querySelector(`.player-${activePlayer}-panel`).classList.remove(`active`)
+            
+            const input = document.querySelector('.final-score').value;
+            let winningScore;
+            // Undefined, 0, null or "" are coerced to false
+            // Anything else is coerced to true
+            if(input) {
+                winningScore = input;
+            } else {
+                winningScore = 100;
+            }
+            // Check if player won the game
+            if (scores[activePlayer] >= winningScore) {
+                document.querySelector(`#name-${activePlayer}`).textContent = 'Winner!';
+                document.getElementById('dice-1').style.display = `none`;
+                document.getElementById('dice-2').style.display = `none`;
+                document.querySelector(`.player-${activePlayer}-panel`).classList.add(`winner`);
+                document.querySelector(`.player-${activePlayer}-panel`).classList.remove(`active`);
                 gamePlaying = false;
-            } else
-                //next player
-                nextPlayer(); 
+            } else {
+                //Next player
+                nextPlayer();
+            }
         }
 });
 
 
 document.querySelector('.btn-new').addEventListener(`click`, init);
-
-
-
-
-// document.querySelector(`#current-${activePlayer}`).innerHTML = `<em>${dice}</em>`;
