@@ -16,12 +16,11 @@ the game
 
 let scores, roundScore, activePlayer, gamePlaying, lastDice;
 
-function init() {
+const init = () => {
     scores = [0, 0];
     activePlayer = 0;
     roundScore = 0;
     gamePlaying = true;
-    
     document.querySelector('.dice').style.display = 'none';
     document.getElementById('score-0').textContent = '0';
     document.getElementById('score-1').textContent = '0';
@@ -53,9 +52,8 @@ const nextPlayer = () => {
     document.querySelector('.dice').style.display = `none`;
 }
 
-
 document.querySelector('.btn-roll').addEventListener(`click`, 
-    function(){
+    () => {
         if(gamePlaying) {
              //random number
             const dice1 = Math.floor(Math.random() * 6) + 1;
@@ -90,15 +88,13 @@ document.querySelector('.btn-roll').addEventListener(`click`,
     }
 });
        
-
 document.querySelector('.btn-hold').addEventListener(`click`, 
-    function() {
+    () => {
         if (gamePlaying) {
             // Add current score to global score
             scores[activePlayer] += roundScore;
             // Update the UI
             document.querySelector(`#score-${activePlayer}`).textContent = scores[activePlayer];
-            
             const input = document.querySelector('.final-score').value;
             let winningScore;
             // Undefined, 0, null or "" are coerced to false
@@ -122,6 +118,5 @@ document.querySelector('.btn-hold').addEventListener(`click`,
             }
         }
 });
-
 
 document.querySelector('.btn-new').addEventListener(`click`, init);
